@@ -4,40 +4,38 @@ pragma solidity 0.8.17;
 
 contract VotingContract {
 
-    // Contract's Owner address
+    // Address of the election organizer
     address public owner;
 
-    // Relate candidate's name and its personal data hash.
+    // mapping candidate name with its ID
     mapping (string => bytes32) candidateId;
 
-    // Relate candidate's name and votes count.
+    // mapping candidate name with received votes
     mapping (string => uint) candidateVotes;
 
-    // Candidates list.
+    // String type array to hold candidates
     string[] candidates;
 
-    // Voters list as hashes to keep voter info private.
+    // List of voters
     bytes32[] votants;
 
     constructor() 
     {
-        // Set owner to contract deployer.
+        // setting election owner to contract deployer.
         owner = msg.sender;
     }
 
-
-    // Lets everyone be proposed as a candidate.
     function representate(string memory _candidateName, uint _age, string memory _candidateId) public 
     {
-        // Get candidate's data hash.
+        // Getting candidate's data hash.
         bytes32 _candidateHash = keccak256(abi.encodePacked(_candidateName, _age, _candidateId));
-        // Store candidate's hash.
+        // Storing candidate's hash.
         candidateId[_candidateName] = _candidateHash;
-        // Update candidates array.
+        // Updating candidates array.
         candidates.push(_candidateName);
     }
 
-    // Get candidates list.
+    // Getting candidates list.
     function getCandidates() public view returns (string[] memory) 
     {
         return candidates;
@@ -49,10 +47,10 @@ contract VotingContract {
         candidateVotes[_candidateName] ++;
     }
 
-    // Check that voter is not voting twice.
+    // Check that voter has voted already or not.
     modifier onlyOnce() 
     {
-        // Calculate voter's hash.
+        // Calculating voter's hash.
         bytes32 _votantHash = keccak256(abi.encodePacked(msg.sender));
         // Check if votant has voted before.
         for(uint256 i = 0; i < votants.length; i++) 
@@ -64,13 +62,13 @@ contract VotingContract {
         _;
     }
 
-    // Get candidate votes.
+    // Getting candidate votes.
     function getCandidateVotes(string memory _candidateName) public view returns (uint) 
     {
         return candidateVotes[_candidateName];
     }
 
-    // Get vote winnner.
+    // Getting vote winner name.
     function getVoteResult() public view returns(string memory) 
     {
         // Get candidates result.
@@ -110,7 +108,7 @@ contract VotingContract {
         return string(bstr);
     }
 
-    // Get Vote Winner.
+    // Getting Election Winner.
     function winner() public view returns (string memory) 
     {
         require(candidates.length > 0, "Not enough candidates.");
